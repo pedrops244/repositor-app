@@ -4,7 +4,7 @@ export const NavBar = () => {
   return (
     <nav className='w-full flex justify-between items-center p-4 bg-blue-600 text-white'>
       <div className='flex items-center'>
-        <Link href='/' className='text-lg font-semibold hover:underline'>
+        <Link href='/scanner' className='text-lg font-semibold hover:underline'>
           Scanner
         </Link>
       </div>
