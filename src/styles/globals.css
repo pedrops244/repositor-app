@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Variáveis de cor */
+:root {
+  --primary-color-blue: #0800ff;
+  --secondary-color-blue: #037ac5;
+
+  --primary-color-red: #dc3545;
+  --secondary-color-red: #c82333;
+
+  --primary-color-green: #28a745;
+  --secondary-color-green: #218838;
+
+  --background-color-body: #333;
+  --background-color: #f0f4f8;
+
+  --white-color: #ffff;
+}
+
+/* Reset de estilo */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  background-color: var(--background-color);
+  color: var(--background-color-body);
+  padding: 20px;
+}
+
+/* Outros estilos globais podem ser adicionados aqui */
