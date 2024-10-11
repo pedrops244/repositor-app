@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Container from './ui/Container';
 import { NavBar } from './ui/NavBar';
 import Button from './ui/Button';
@@ -10,22 +10,26 @@ export default function Home() {
   const [quantity, setQuantity] = useState('');
   const [produtos, setProdutos] = useState([]);
 
-  useEffect(() => {
-    const storedPedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
-    setProdutos(storedPedidos);
-  }, []);
+  /* Botão que limpar o localStorage(Desenvolvimento) */
+  const clearLocalStorage = () => {
+    localStorage.removeItem('pedidos');
+    alert('Todos os pedidos foram removidos.');
+  };
 
   const addProduct = () => {
-    if (code === '' || quantity === '') {
-      alert('Preencha ambos os campos.');
+    if (!code || !quantity || isNaN(quantity) || quantity <= 0) {
+      alert('Preencha o código e uma quantidade válida.');
       return;
     }
 
-    const newProduct = { codigo: code, quantidade: quantity };
-    const updatedProdutos = [...produtos, newProduct];
+    const quantidadeInt = parseInt(quantity, 10);
+    const updatedProdutos = [...produtos];
+
+    for (let i = 0; i < quantidadeInt; i++) {
+      updatedProdutos.push({ codigo: code, quantidade: 1 });
+    }
 
     setProdutos(updatedProdutos);
-    localStorage.setItem('pedidos', JSON.stringify(updatedProdutos));
 
     setCode('');
     setQuantity('');
@@ -34,27 +38,27 @@ export default function Home() {
   const removeProduct = (index) => {
     const updatedProdutos = produtos.filter((_, idx) => idx !== index);
     setProdutos(updatedProdutos);
-    localStorage.setItem('pedidos', JSON.stringify(updatedProdutos));
   };
 
-  const enviarProdutos = () => {
+  const enviarPedido = () => {
     if (produtos.length === 0) {
-      alert('Nenhum produto para enviar.');
+      alert('Nenhum produto no pedido para enviar.');
       return;
     }
 
     const pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
-    pedidos.push(produtos);
+    const novoPedido = [...produtos];
+
+    pedidos.push(novoPedido);
     localStorage.setItem('pedidos', JSON.stringify(pedidos));
 
-    alert('Produtos enviados com sucesso!');
+    alert('Pedido enviado com sucesso!');
     setProdutos([]);
-    localStorage.removeItem('pedidos');
   };
 
   return (
     <Container>
-      <div className='flex justify-center gap-4 mt-8 '>
+      <div className='flex flex-col sm:flex-row justify-center gap-4 mt-8'>
         <Input
           value={code}
           onChange={(e) => setCode(e.target.value)}
@@ -74,6 +78,7 @@ export default function Home() {
           onClick={addProduct}
         />
       </div>
+
       <div className='mt-8'>
         <h2 className='text-center text-lg font-semibold'>
           Produtos Adicionados
@@ -89,7 +94,7 @@ export default function Home() {
               >
                 <span>
                   <p className='text-sm'>Produto: {produto.codigo}</p>
-                  <p className='text-sm'>Quantidade:{produto.quantidade}</p>
+                  <p className='text-sm'>Quantidade: {produto.quantidade} </p>
                 </span>
                 <Button
                   text='Remover'
@@ -104,10 +109,18 @@ export default function Home() {
 
       <div className='flex justify-center mt-8'>
         <Button
-          text='Enviar Produtos'
+          text='Enviar Pedido'
           color='bg-yellow-400'
-          onClick={enviarProdutos}
+          onClick={enviarPedido}
         />
+      </div>
+      <div className='text-center mt-6'>
+        <button
+          onClick={clearLocalStorage}
+          className='bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600'
+        >
+          Limpar Pedidos
+        </button>
       </div>
     </Container>
   );
