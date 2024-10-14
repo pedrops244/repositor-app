@@ -42,10 +42,11 @@ const Login = () => {
           className='object-contain'
         />
       </div>
-      <h1 className='text-2xl font-bold mb-4 mt-5 flex justify-center'>
+      <h1 className='text-4xl font-bold mb-4 mt-3 flex justify-center'>
         Login
       </h1>
-      <div className='flex flex-col sm:flex-row justify-center gap-4 mt-8'>
+      <div className='flex flex-col sm:flex-row justify-center gap-3 mt-8'>
+        <span class='sm:mt-2 text-sm font-bold text-slate-700'>Usuário</span>
         <Input
           value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -53,6 +54,7 @@ const Login = () => {
           className='mb-4'
         />
 
+        <span class='sm:mt-2 text-sm font-bold text-slate-700'>Senha</span>
         <Input
           value={password}
           onChange={(e) => setPassword(e.target.value)}

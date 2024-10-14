@@ -4,14 +4,16 @@ import Container from '../ui/Container';
 import { NavBar } from '../ui/NavBar';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
 const Home = () => {
   const [code, setCode] = useState('');
   const [quantity, setQuantity] = useState('');
   const [produtos, setProdutos] = useState([]);
-  const [expandedIndex, setExpandedIndex] = useState(null);
-  /* Botão que limpar o localStorage(Desenvolvimento) */
+  const [produtoExpandido, setProdutoExpandido] = useState({});
+
+  /* Botão que limpa o localStorage (Desenvolvimento) */
   const clearLocalStorage = () => {
     localStorage.removeItem('pedidos');
     setProdutos([]);
@@ -27,7 +29,6 @@ const Home = () => {
     const quantidadeInt = parseInt(quantity, 10);
     const updatedProdutos = [...produtos];
 
-    // Agrupar produtos pelo código
     const existingProductIndex = updatedProdutos.findIndex(
       (produto) => produto.codigo === code,
     );
@@ -64,8 +65,11 @@ const Home = () => {
     setProdutos([]);
   };
 
-  const toggleExpand = (index) => {
-    setExpandedIndex(expandedIndex === index ? null : index);
+  const toggleExpandProduto = (index) => {
+    setProdutoExpandido((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
   };
 
   return (
@@ -77,7 +81,6 @@ const Home = () => {
             value={code}
             onChange={(e) => setCode(e.target.value)}
             placeholder='Código lido'
-            disabled={false}
           />
 
           <Input
@@ -105,12 +108,25 @@ const Home = () => {
                 <div key={index} className='border p-2 rounded-md'>
                   <div
                     className='flex justify-between items-center cursor-pointer'
-                    onClick={() => toggleExpand(index)}
+                    onClick={() => toggleExpandProduto(index)}
                   >
-                    <span className='font-semibold'>
-                      Produto: {produto.codigo} <br />
-                      Quantidade: {produto.quantidade}
+                    <div className='flex flex-col justify-between w-full'>
+                      <span>
+                        <strong>Produto:</strong> {produto.codigo}
+                      </span>
+                      <span className='mr-2'>
+                        <strong>Quantidade:</strong> {produto.quantidade}
+                      </span>
+                    </div>
+
+                    <span className='mr-2'>
+                      {produtoExpandido[index] ? (
+                        <FaChevronUp className='text-blue-600' />
+                      ) : (
+                        <FaChevronDown className='text-blue-600' />
+                      )}
                     </span>
+
                     <Button
                       text='Remover'
                       color='bg-red-500'
@@ -118,11 +134,17 @@ const Home = () => {
                     />
                   </div>
 
-                  {expandedIndex === index && (
-                    <div className='mt-1 pl-3'>
-                      {Array.from({ length: produto.quantidade }, (_, i) => (
-                        <p key={i}>{`Unidade ${i + 1}: ${produto.codigo}`}</p>
-                      ))}
+                  {produtoExpandido[index] && (
+                    <div className='ml-4 space-y-1 mt-2'>
+                      {Array.from({ length: produto.quantidade }).map(
+                        (_, i) => (
+                          <div key={i} className='flex justify-between'>
+                            <p key={i}>{`Unidade ${i + 1}: ${
+                              produto.codigo
+                            }`}</p>
+                          </div>
+                        ),
+                      )}
                     </div>
                   )}
                 </div>
