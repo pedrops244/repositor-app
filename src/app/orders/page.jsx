@@ -6,8 +6,8 @@ import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 const OrdersPage = () => {
   const [pedidos, setPedidos] = useState([]);
-  const [pedidoExpandido, setPedidoExpandido] = useState({}); // Estado de expansão dos pedidos
-  const [produtoExpandido, setProdutoExpandido] = useState({}); // Estado de expansão dos produtos
+  const [pedidoExpandido, setPedidoExpandido] = useState({});
+  const [produtoExpandido, setProdutoExpandido] = useState({});
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -77,7 +77,7 @@ const OrdersPage = () => {
                             <span>
                               <strong>Produto:</strong> {produto.codigo}
                             </span>
-                            <span className='mr-2'>
+                            <span className='mr-2 '>
                               <strong>Quantidade:</strong> {produto.quantidade}
                             </span>
                           </div>
@@ -91,7 +91,7 @@ const OrdersPage = () => {
                         </div>
 
                         {produtoExpandido[key] && (
-                          <div className='ml-4 space-y-1'>
+                          <div className='ml-3 space-y-1'>
                             {Array.from({ length: produto.quantidade }).map(
                               (_, i) => (
                                 <div key={i} className='flex justify-between'>

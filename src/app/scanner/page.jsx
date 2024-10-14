@@ -110,7 +110,7 @@ const Home = () => {
                     className='flex justify-between items-center cursor-pointer'
                     onClick={() => toggleExpandProduto(index)}
                   >
-                    <div className='flex flex-col justify-between w-full'>
+                    <div className='flex sm:flex-row flex-col justify-between w-full'>
                       <span>
                         <strong>Produto:</strong> {produto.codigo}
                       </span>
@@ -119,7 +119,7 @@ const Home = () => {
                       </span>
                     </div>
 
-                    <span className='mr-2'>
+                    <span className='mr-2 hidden sm:flex'>
                       {produtoExpandido[index] ? (
                         <FaChevronUp className='text-blue-600' />
                       ) : (
