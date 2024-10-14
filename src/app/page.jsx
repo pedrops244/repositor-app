@@ -5,22 +5,22 @@ import Container from './ui/Container';
 import Input from './ui/Input';
 import Button from './ui/Button';
 import Image from 'next/image';
+import { toast } from 'react-toastify';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
 
   const handleLogin = () => {
     if (username === '' || password === '') {
-      setErrorMessage('Por favor, preencha todos os campos.');
+      toast.error('Por favor, preencha todos os campos.');
       return;
     }
 
     if (username !== 'admin' || password !== '123') {
-      setErrorMessage('Usuário ou senha incorretos.');
+      toast.error('Usuário ou senha incorretos.');
       return;
     }
 
@@ -33,21 +33,19 @@ const Login = () => {
 
   return (
     <Container>
-      <div className='flex justify-center'>
+      <div className='flex justify-center mt-3'>
         <Image
-          src='/images/lojas_o_amigo_logo.jpg' // Caminho para sua logo
+          src='/images/lojas_o_amigo_logo.jpg'
           alt='Logo da Empresa'
-          width={180} // Largura desejada
-          height={50} // Altura desejada
-          className='object-contain' // Para manter a proporção
+          width={180}
+          height={50}
+          className='object-contain'
         />
       </div>
       <h1 className='text-2xl font-bold mb-4 mt-5 flex justify-center'>
         Login
       </h1>
       <div className='flex flex-col sm:flex-row justify-center gap-4 mt-8'>
-        {errorMessage && <p className='text-red-500 mb-4'>{errorMessage}</p>}
-
         <Input
           value={username}
           onChange={(e) => setUsername(e.target.value)}

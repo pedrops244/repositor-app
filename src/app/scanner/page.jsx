@@ -4,6 +4,7 @@ import Container from '../ui/Container';
 import { NavBar } from '../ui/NavBar';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
+import { toast } from 'react-toastify';
 
 const Home = () => {
   const [code, setCode] = useState('');
@@ -13,12 +14,13 @@ const Home = () => {
   /* Botão que limpar o localStorage(Desenvolvimento) */
   const clearLocalStorage = () => {
     localStorage.removeItem('pedidos');
-    alert('Todos os pedidos foram removidos.');
+    setProdutos([]);
+    toast.success('Todos os pedidos foram removidos.');
   };
 
   const addProduct = () => {
     if (!code || !quantity || isNaN(quantity) || quantity <= 0) {
-      alert('Preencha o código e uma quantidade válida.');
+      toast.warning('Preencha o código e uma quantidade válida.');
       return;
     }
 
@@ -48,7 +50,7 @@ const Home = () => {
 
   const enviarPedido = () => {
     if (produtos.length === 0) {
-      alert('Nenhum produto no pedido para enviar.');
+      toast.info('Nenhum produto no pedido para enviar.');
       return;
     }
 
@@ -58,7 +60,7 @@ const Home = () => {
     pedidos.push(novoPedido);
     localStorage.setItem('pedidos', JSON.stringify(pedidos));
 
-    alert('Pedido enviado com sucesso!');
+    toast.success('Pedido enviado com sucesso!');
     setProdutos([]);
   };
 
