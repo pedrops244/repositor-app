@@ -65,7 +65,7 @@ const OrdersPage = () => {
                 </span>
               </div>
               {pedidoExpandido[pedidoIndex] && (
-                <ul className='mt-2 space-y-2'>
+                <ul className='mt-2 space-y-2 '>
                   {pedido.produtos.map((produto, produtoIndex) => {
                     const key = `${pedidoIndex}-${produtoIndex}`;
                     return (
@@ -83,8 +83,8 @@ const OrdersPage = () => {
                             <span>
                               <strong>Produto:</strong> {produto.codigo}
                             </span>
-                            <span className='mr-2 '>
-                              <strong>Quantidade:</strong> {produto.quantidade}
+                            <span className='mr-1 flex gap-1'>
+                              <strong>Quantidade: </strong> {produto.quantidade}
                             </span>
                           </div>
                           <span>
