@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Container from '../ui/Container';
 import { NavBar } from '../ui/NavBar';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { formatarData } from '../lib/formatarData';
 
 const OrdersPage = () => {
   const [pedidos, setPedidos] = useState([]);
@@ -35,7 +36,7 @@ const OrdersPage = () => {
     <>
       <NavBar />
       <Container>
-        <h2 className='text-center text-3xl font-bold mt-8'>Meus Pedidos</h2>
+        <h2 className='text-center text-2xl font-bold mt-8'>Meus Pedidos</h2>
 
         {pedidos.length === 0 ? (
           <p className='text-center'>Nenhum pedido encontrado.</p>
@@ -46,9 +47,15 @@ const OrdersPage = () => {
                 className='flex justify-between items-center cursor-pointer'
                 onClick={() => toggleExpandPedido(pedidoIndex)}
               >
-                <h3 className='text-lg font-semibold'>
-                  Pedido {pedidoIndex + 1}
-                </h3>
+                <div className='flex items-center justify-between p-3 gap-3'>
+                  <h3 className='text-lg font-semibold text-gray-800'>
+                    Pedido {pedidoIndex + 1}
+                  </h3>
+                  <span className='text-sm text-gray-500 '>
+                    {formatarData(pedido.enviadoEm)}
+                  </span>
+                </div>
+
                 <span>
                   {pedidoExpandido[pedidoIndex] ? (
                     <FaChevronUp className='text-blue-600' />
@@ -57,11 +64,10 @@ const OrdersPage = () => {
                   )}
                 </span>
               </div>
-
               {pedidoExpandido[pedidoIndex] && (
                 <ul className='mt-2 space-y-2'>
-                  {pedido.map((produto, produtoIndex) => {
-                    const key = `${pedidoIndex}-${produtoIndex}`; // Chave única
+                  {pedido.produtos.map((produto, produtoIndex) => {
+                    const key = `${pedidoIndex}-${produtoIndex}`;
                     return (
                       <li
                         key={key}
@@ -73,7 +79,7 @@ const OrdersPage = () => {
                             toggleExpandProduto(pedidoIndex, produtoIndex)
                           }
                         >
-                          <div className='flex justify-between w-full'>
+                          <div className='flex justify-between w-full px-3'>
                             <span>
                               <strong>Produto:</strong> {produto.codigo}
                             </span>

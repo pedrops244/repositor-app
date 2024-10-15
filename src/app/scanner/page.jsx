@@ -13,8 +13,8 @@ const Scanner = () => {
   const [quantity, setQuantity] = useState('');
   const [produtos, setProdutos] = useState([]);
   const [produtoExpandido, setProdutoExpandido] = useState({});
+  const MAX_QUANTIDADE = 30;
 
-  /* Botão que limpa o localStorage (Desenvolvimento) */
   const clearLocalStorage = () => {
     if (produtos.length === 0) {
       toast.info('Nenhum produto no pedido para remover.');
@@ -26,20 +26,23 @@ const Scanner = () => {
   };
 
   const addProduct = () => {
-    if (!code || !quantity || isNaN(quantity) || quantity <= 0) {
+    const quantidadeInt = Math.min(parseInt(quantity, 10), MAX_QUANTIDADE);
+
+    if (!code || isNaN(quantidadeInt) || quantidadeInt <= 0) {
       toast.warning('Preencha o código e uma quantidade válida.');
       return;
     }
 
-    const quantidadeInt = parseInt(quantity, 10);
     const updatedProdutos = [...produtos];
-
     const existingProductIndex = updatedProdutos.findIndex(
       (produto) => produto.codigo === code,
     );
 
     if (existingProductIndex >= 0) {
-      updatedProdutos[existingProductIndex].quantidade += quantidadeInt;
+      updatedProdutos[existingProductIndex].quantidade = Math.min(
+        updatedProdutos[existingProductIndex].quantidade + quantidadeInt,
+        MAX_QUANTIDADE,
+      );
     } else {
       updatedProdutos.push({ codigo: code, quantidade: quantidadeInt });
     }
@@ -61,7 +64,10 @@ const Scanner = () => {
     }
 
     const pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
-    const novoPedido = [...produtos];
+    const novoPedido = {
+      produtos,
+      enviadoEm: new Date().toISOString(),
+    };
 
     pedidos.push(novoPedido);
     localStorage.setItem('pedidos', JSON.stringify(pedidos));
@@ -89,8 +95,13 @@ const Scanner = () => {
           />
 
           <Input
+            type='number'
+            min='1'
+            max={MAX_QUANTIDADE}
             value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
+            onChange={(e) =>
+              setQuantity(Math.min(e.target.value, MAX_QUANTIDADE))
+            }
             placeholder='Quantidade'
           />
 
@@ -140,14 +151,14 @@ const Scanner = () => {
 
                   {produtoExpandido[index] && (
                     <div className='border p-2 rounded-md mt-2 border-yellow-500'>
-                      <ul className='ml-4 space-y-1  list-decimal'>
-                        {Array.from({ length: produto.quantidade }).map(
-                          (_, i) => (
-                            <li className='ml-3' key={i}>
-                              {`Unidade | ${produto.codigo}`}
-                            </li>
-                          ),
-                        )}
+                      <ul className='ml-4 space-y-1 list-decimal'>
+                        {Array.from({
+                          length: Math.min(produto.quantidade, MAX_QUANTIDADE),
+                        }).map((_, i) => (
+                          <li className='ml-3' key={i}>
+                            {`Unidade | ${produto.codigo}`}
+                          </li>
+                        ))}
                       </ul>
                     </div>
                   )}
