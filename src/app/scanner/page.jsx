@@ -5,6 +5,7 @@ import { NavBar } from '../ui/NavBar';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { IoIosRemoveCircle } from 'react-icons/io';
 import { toast } from 'react-toastify';
 
 const Home = () => {
@@ -126,25 +127,24 @@ const Home = () => {
                         <FaChevronDown className='text-blue-600' />
                       )}
                     </span>
-
                     <Button
-                      text='Remover'
+                      text={<IoIosRemoveCircle />}
                       color='bg-red-500'
                       onClick={() => removeProduct(index)}
                     />
                   </div>
 
                   {produtoExpandido[index] && (
-                    <div className='ml-4 space-y-1 mt-2'>
-                      {Array.from({ length: produto.quantidade }).map(
-                        (_, i) => (
-                          <div key={i} className='flex justify-between'>
-                            <p key={i}>{`Unidade ${i + 1}: ${
-                              produto.codigo
-                            }`}</p>
-                          </div>
-                        ),
-                      )}
+                    <div className='border p-2 rounded-md mt-2 border-yellow-500'>
+                      <ul className='ml-4 space-y-1  list-decimal'>
+                        {Array.from({ length: produto.quantidade }).map(
+                          (_, i) => (
+                            <li className='ml-3' key={i}>
+                              {`Unidade | ${produto.codigo}`}
+                            </li>
+                          ),
+                        )}
+                      </ul>
                     </div>
                   )}
                 </div>

@@ -65,7 +65,7 @@ const OrdersPage = () => {
                     return (
                       <li
                         key={key}
-                        className='border p-2 rounded-md flex flex-col space-y-2'
+                        className='border-yellow-500 border p-2 rounded-md flex flex-col space-y-2'
                       >
                         <div
                           className='flex justify-between items-center cursor-pointer'
@@ -91,16 +91,16 @@ const OrdersPage = () => {
                         </div>
 
                         {produtoExpandido[key] && (
-                          <div className='ml-3 space-y-1'>
-                            {Array.from({ length: produto.quantidade }).map(
-                              (_, i) => (
-                                <div key={i} className='flex justify-between'>
-                                  <p key={i}>{`Unidade ${i + 1}: ${
-                                    produto.codigo
-                                  }`}</p>
-                                </div>
-                              ),
-                            )}
+                          <div className='border p-2 rounded-md mt-2'>
+                            <ul className='ml-4 space-y-1  list-decimal'>
+                              {Array.from({ length: produto.quantidade }).map(
+                                (_, i) => (
+                                  <li className='ml-3' key={i}>
+                                    {`Unidade | ${produto.codigo}`}
+                                  </li>
+                                ),
+                              )}
+                            </ul>
                           </div>
                         )}
                       </li>
