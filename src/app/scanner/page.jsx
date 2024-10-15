@@ -8,7 +8,7 @@ import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { IoIosRemoveCircle } from 'react-icons/io';
 import { toast } from 'react-toastify';
 
-const Home = () => {
+const Scanner = () => {
   const [code, setCode] = useState('');
   const [quantity, setQuantity] = useState('');
   const [produtos, setProdutos] = useState([]);
@@ -176,4 +176,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Scanner;

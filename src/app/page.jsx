@@ -24,7 +24,7 @@ const Login = () => {
       return;
     }
 
-    router.push('/scanner');
+    router.push('/submenu');
   };
 
   const toggleModal = () => {
