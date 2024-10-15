@@ -46,7 +46,9 @@ const Login = () => {
         Login
       </h1>
       <div className='flex flex-col sm:flex-row justify-center gap-3 mt-8'>
-        <span class='sm:mt-2 text-sm font-bold text-slate-700'>Usuário</span>
+        <span className='sm:mt-2 text-sm font-bold text-slate-700'>
+          Usuário
+        </span>
         <Input
           value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -54,7 +56,7 @@ const Login = () => {
           className='mb-4'
         />
 
-        <span class='sm:mt-2 text-sm font-bold text-slate-700'>Senha</span>
+        <span className='sm:mt-2 text-sm font-bold text-slate-700'>Senha</span>
         <Input
           value={password}
           onChange={(e) => setPassword(e.target.value)}

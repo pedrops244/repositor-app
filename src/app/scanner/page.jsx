@@ -16,9 +16,13 @@ const Home = () => {
 
   /* Botão que limpa o localStorage (Desenvolvimento) */
   const clearLocalStorage = () => {
+    if (produtos.length === 0) {
+      toast.error('Não há pedidos a serem removidos.');
+      return;
+    }
     localStorage.removeItem('pedidos');
-    setProdutos([]);
     toast.success('Todos os pedidos foram removidos.');
+    setProdutos([]);
   };
 
   const addProduct = () => {
@@ -161,12 +165,11 @@ const Home = () => {
           />
         </div>
         <div className='text-center mt-6'>
-          <button
+          <Button
+            text='Limpar pedidos'
+            color='bg-red-500'
             onClick={clearLocalStorage}
-            className='bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600'
-          >
-            Limpar Pedidos
-          </button>
+          />
         </div>
       </Container>
     </>
