@@ -17,7 +17,7 @@ const Scanner = () => {
   /* Botão que limpa o localStorage (Desenvolvimento) */
   const clearLocalStorage = () => {
     if (produtos.length === 0) {
-      toast.error('Nenhum produto no pedido para remover.');
+      toast.info('Nenhum produto no pedido para remover.');
       return;
     }
     localStorage.removeItem('pedidos');
