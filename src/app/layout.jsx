@@ -13,7 +13,7 @@ export default function RootLayout({ children }) {
           <div className='flex-1 flex flex-col h-full'>{children}</div>
         </main>
         <ToastContainer
-          position='bottom-right'
+          position='bottom-center'
           autoClose={2000}
           hideProgressBar={false}
           newestOnTop={false}
@@ -21,7 +21,7 @@ export default function RootLayout({ children }) {
           rtl={false}
           pauseOnFocusLoss
           draggable
-          limit={1}
+          // limit={1}
           pauseOnHover
           theme='colored'
         />

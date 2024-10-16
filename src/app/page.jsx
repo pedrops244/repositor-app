@@ -33,7 +33,7 @@ const Login = () => {
 
   return (
     <Container>
-      <div className='flex justify-center mt-3'>
+      <div className='flex justify-center mt-20'>
         <Image
           src='/images/lojas_o_amigo_logo.jpg'
           alt='Logo da Empresa'
