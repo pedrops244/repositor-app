@@ -3,7 +3,7 @@ import Link from 'next/link';
 export const NavBar = () => {
   return (
     <nav className='w-full flex justify-center items-center p-3 bg-blue-600 text-white'>
-      <div className='ml-6'>
+      <div>
         <div className='flex space-x-4'>
           <Link
             href='/scanner'

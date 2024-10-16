@@ -57,7 +57,7 @@ const Scanner = () => {
     setProdutos(updatedProdutos);
   };
 
-  const enviarPedido = () => {
+  const sendPedido = () => {
     if (produtos.length === 0) {
       toast.info('Nenhum produto no pedido para enviar.');
       return;
@@ -172,7 +172,7 @@ const Scanner = () => {
           <Button
             text='Enviar Pedido'
             color='bg-yellow-400'
-            onClick={enviarPedido}
+            onClick={sendPedido}
           />
         </div>
         <div className='text-center mt-6'>
