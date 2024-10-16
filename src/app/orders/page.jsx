@@ -79,21 +79,14 @@ const OrdersPage = () => {
                             toggleExpandProduto(pedidoIndex, produtoIndex)
                           }
                         >
-                          <div className='flex justify-between w-full px-3'>
+                          <div className='flex justify-between w-full'>
                             <span>
                               <strong>Produto:</strong> {produto.codigo}
                             </span>
-                            <span className='mr-1 flex gap-1'>
-                              <strong>Quantidade: </strong> {produto.quantidade}
+                            <span className='flex gap-1 mr-1'>
+                              <strong>Qtd: </strong> {produto.quantidade}
                             </span>
                           </div>
-                          <span>
-                            {produtoExpandido[key] ? (
-                              <FaChevronUp className='text-blue-600' />
-                            ) : (
-                              <FaChevronDown className='text-blue-600' />
-                            )}
-                          </span>
                         </div>
 
                         {produtoExpandido[key] && (
@@ -101,7 +94,7 @@ const OrdersPage = () => {
                             <ul className='ml-4 space-y-1  list-decimal'>
                               {Array.from({ length: produto.quantidade }).map(
                                 (_, i) => (
-                                  <li className='ml-3' key={i}>
+                                  <li className='ml-3 text-nowrap' key={i}>
                                     {`Unidade | ${produto.codigo}`}
                                   </li>
                                 ),

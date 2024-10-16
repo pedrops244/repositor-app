@@ -39,7 +39,7 @@ const Login = () => {
           alt='Logo da Empresa'
           width={180}
           height={50}
-          className='object-contain'
+          className='object-contain rounded-full'
         />
       </div>
       <h1 className='text-4xl font-bold mb-4 mt-3 flex justify-center'>

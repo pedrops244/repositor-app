@@ -25,6 +25,7 @@ export const NavBar = () => {
           >
             Sair
           </Link>
+
           <Link
             href='/submenu'
             className='block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-blue-500 hover:text-white'

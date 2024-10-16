@@ -14,7 +14,7 @@ const SubMenu = () => {
             alt='Logo da Empresa'
             width={180}
             height={50}
-            className='object-contain'
+            className='object-contain rounded-xl'
           />
         </div>
         <div className='flex flex-col w-auto justify-center gap-4 mt-8'>
