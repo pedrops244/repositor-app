@@ -6,9 +6,9 @@ import Image from 'next/image';
 const SubMenu = () => {
   return (
     <>
-      <NavBar />
+      {/* <NavBar /> */}
       <Container>
-        <div className='flex justify-center mt-3'>
+        <div className='flex justify-center mt-14'>
           <Image
             src='/images/lojas_o_amigo_logo.jpg'
             alt='Logo da Empresa'
@@ -29,6 +29,12 @@ const SubMenu = () => {
             href='/orders'
           >
             Ver minhas remessas
+          </Link>
+          <Link
+            className='flex justify-center rounded-md px-3 py-2 text-base font-medium text-white bg-blue-600 hover:bg-blue-400'
+            href='/'
+          >
+            Sair
           </Link>
         </div>
       </Container>
