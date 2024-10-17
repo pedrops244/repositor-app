@@ -1,7 +1,9 @@
-const Button = ({ text, onClick, color }) => {
+const Button = ({ text, onClick, color, textColor }) => {
   return (
     <button
-      className={`py-2 px-4 rounded-md text-white ${color} hover:opacity-90`}
+      className={`py-2 px-4 rounded-md ${
+        textColor || 'text-white'
+      } ${color} hover:opacity-90`}
       onClick={onClick}
     >
       {text}

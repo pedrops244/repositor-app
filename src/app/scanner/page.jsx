@@ -8,6 +8,7 @@ import Input from '../ui/Input';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { IoIosRemoveCircle } from 'react-icons/io';
 import { toast } from 'react-toastify';
+import BarcodeScanner from '../lib/BarcodeScanner';
 
 const Scanner = () => {
   const [code, setCode] = useState('');
@@ -20,41 +21,11 @@ const Scanner = () => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  useEffect(() => {
-    if (isModalOpen) {
-      Quagga.init(
-        {
-          inputStream: {
-            type: 'LiveStream',
-            target: document.querySelector('#scanner'),
-          },
-          decoder: {
-            readers: ['code_128_reader', 'ean_reader'],
-          },
-        },
-        (err) => {
-          if (err) {
-            console.error('Erro ao iniciar Quagga:', err);
-            return;
-          }
-          console.log('Quagga iniciado');
-          Quagga.start();
-        },
-      );
-
-      Quagga.onDetected((result) => {
-        if (result?.codeResult?.code) {
-          const scannedCode = result.codeResult.code;
-          setCode(scannedCode);
-          closeModal();
-        }
-      });
-
-      return () => {
-        Quagga.stop();
-      };
-    }
-  }, [isModalOpen]);
+  const handleDetected = (scannedCode) => {
+    setCode(scannedCode);
+    toast.success(`Código ${scannedCode} lido com sucesso!`);
+    closeModal();
+  };
 
   const addProduct = () => {
     const quantidadeInt = Math.min(parseInt(quantity, 10), MAX_QUANTIDADE);
@@ -88,7 +59,12 @@ const Scanner = () => {
       <NavBar />
       <Container>
         <div className='flex flex-col sm:flex-row justify-center gap-4 mt-8'>
-          <Button text='Escanear' color='bg-blue-600' onClick={openModal} />
+          <Button
+            text='Escanear'
+            color='bg-yellow-400'
+            textColor='text-black'
+            onClick={openModal}
+          />
           <Input
             value={code}
             onChange={(e) => setCode(e.target.value)}
@@ -174,15 +150,13 @@ const Scanner = () => {
         </div>
 
         {isModalOpen && (
-          <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center'>
-            <div className='bg-white p-6 rounded-md'>
-              <h2 className='text-center text-lg mb-4'>Escaneando...</h2>
-              <div id='scanner' className='w-64 h-64'></div>
-              <Button
-                text='Fechar'
-                color='bg-red-500 mt-4'
-                onClick={closeModal}
-              />
+          <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center'>
+            <div className='bg-white p-6 rounded-lg shadow-lg w-full max-w-md'>
+              <h2 className='text-lg font-semibold mb-4'>Escaneando...</h2>
+              <div className='flex flex-col'>
+                <BarcodeScanner onDetected={handleDetected} />
+                <Button text='Fechar' color='bg-red-500' onClick={closeModal} />
+              </div>
             </div>
           </div>
         )}
