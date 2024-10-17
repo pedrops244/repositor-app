@@ -23,7 +23,6 @@ const Scanner = () => {
 
   const handleDetected = (scannedCode) => {
     setCode(scannedCode);
-    toast.success(`Código ${scannedCode} lido com sucesso!`);
     closeModal();
   };
 
