@@ -26,6 +26,15 @@ const Scanner = () => {
     closeModal();
   };
 
+  const clearLocalStorage = () => {
+    if (produtos.length === 0) {
+      toast.info('Nenhum produto no pedido para remover.');
+      return;
+    }
+    localStorage.removeItem('pedidos');
+    toast.success('Todos os pedidos foram removidos.');
+    setProdutos([]);
+  };
   const addProduct = () => {
     const quantidadeInt = Math.min(parseInt(quantity, 10), MAX_QUANTIDADE);
 
@@ -52,6 +61,24 @@ const Scanner = () => {
     setCode('');
     setQuantity('');
   };
+  const sendPedido = () => {
+    if (produtos.length === 0) {
+      toast.info('Nenhum produto no pedido para enviar.');
+      return;
+    }
+
+    const pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
+    const novoPedido = {
+      produtos,
+      enviadoEm: new Date().toISOString(),
+    };
+
+    pedidos.push(novoPedido);
+    localStorage.setItem('pedidos', JSON.stringify(pedidos));
+
+    toast.success('Pedido enviado com sucesso!');
+    setProdutos([]);
+  };
 
   return (
     <>
@@ -67,7 +94,7 @@ const Scanner = () => {
           <Input
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            placeholder='Código lido'
+            placeholder='Código do produto'
           />
           <Input
             type='number'
@@ -159,6 +186,21 @@ const Scanner = () => {
             </div>
           </div>
         )}
+        <div className='flex justify-center mt-8'>
+          <Button
+            text='Enviar Pedido'
+            color='bg-yellow-400'
+            textColor='text-black'
+            onClick={sendPedido}
+          />
+        </div>
+        <div className='text-center mt-6'>
+          <Button
+            text='Limpar pedidos'
+            color='bg-red-500'
+            onClick={clearLocalStorage}
+          />
+        </div>
       </Container>
     </>
   );
