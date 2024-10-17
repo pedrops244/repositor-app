@@ -84,11 +84,12 @@ const Scanner = () => {
     <>
       <NavBar />
       <Container>
-        <div className='flex flex-col sm:flex-row justify-center gap-4 mt-8'>
+        <div className='flex flex-col justify-center gap-4 mt-8'>
           <Button
             text='Escanear'
             color='bg-yellow-400'
             textColor='text-black'
+            hover='hover:bg-yellow-300'
             onClick={openModal}
           />
           <Input
@@ -190,6 +191,7 @@ const Scanner = () => {
           <Button
             text='Enviar Pedido'
             color='bg-yellow-400'
+            hover='hover:bg-yellow-300'
             textColor='text-black'
             onClick={sendPedido}
           />
