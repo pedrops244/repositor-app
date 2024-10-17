@@ -26,7 +26,6 @@ export default function RootLayout({ children }) {
             rtl={false}
             pauseOnFocusLoss
             draggable
-            // limit={1}
             pauseOnHover
             theme='colored'
           />

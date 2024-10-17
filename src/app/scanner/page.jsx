@@ -83,11 +83,16 @@ const Scanner = () => {
     }));
   };
 
+  const scanner = () => {
+    console.log('scanner');
+  };
+
   return (
     <>
       <NavBar />
       <Container>
         <div className='flex flex-col sm:flex-row justify-center gap-4 mt-8'>
+          <Button text='Escanear' color='bg-blue-600' onClick={scanner} />
           <Input
             value={code}
             onChange={(e) => setCode(e.target.value)}
