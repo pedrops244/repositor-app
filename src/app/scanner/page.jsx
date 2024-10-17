@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Quagga from '@ericblade/quagga2';
 import Container from '../ui/Container';
 import { NavBar } from '../ui/NavBar';
 import Button from '../ui/Button';
@@ -13,17 +14,47 @@ const Scanner = () => {
   const [quantity, setQuantity] = useState('');
   const [produtos, setProdutos] = useState([]);
   const [produtoExpandido, setProdutoExpandido] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const MAX_QUANTIDADE = 30;
 
-  const clearLocalStorage = () => {
-    if (produtos.length === 0) {
-      toast.info('Nenhum produto no pedido para remover.');
-      return;
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      Quagga.init(
+        {
+          inputStream: {
+            type: 'LiveStream',
+            target: document.querySelector('#scanner'),
+          },
+          decoder: {
+            readers: ['code_128_reader', 'ean_reader'],
+          },
+        },
+        (err) => {
+          if (err) {
+            console.error('Erro ao iniciar Quagga:', err);
+            return;
+          }
+          console.log('Quagga iniciado');
+          Quagga.start();
+        },
+      );
+
+      Quagga.onDetected((result) => {
+        if (result?.codeResult?.code) {
+          const scannedCode = result.codeResult.code;
+          setCode(scannedCode);
+          closeModal();
+        }
+      });
+
+      return () => {
+        Quagga.stop();
+      };
     }
-    localStorage.removeItem('pedidos');
-    toast.success('Todos os pedidos foram removidos.');
-    setProdutos([]);
-  };
+  }, [isModalOpen]);
 
   const addProduct = () => {
     const quantidadeInt = Math.min(parseInt(quantity, 10), MAX_QUANTIDADE);
@@ -52,53 +83,17 @@ const Scanner = () => {
     setQuantity('');
   };
 
-  const removeProduct = (index) => {
-    const updatedProdutos = produtos.filter((_, idx) => idx !== index);
-    setProdutos(updatedProdutos);
-  };
-
-  const sendPedido = () => {
-    if (produtos.length === 0) {
-      toast.info('Nenhum produto no pedido para enviar.');
-      return;
-    }
-
-    const pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
-    const novoPedido = {
-      produtos,
-      enviadoEm: new Date().toISOString(),
-    };
-
-    pedidos.push(novoPedido);
-    localStorage.setItem('pedidos', JSON.stringify(pedidos));
-
-    toast.success('Pedido enviado com sucesso!');
-    setProdutos([]);
-  };
-
-  const toggleExpandProduto = (index) => {
-    setProdutoExpandido((prev) => ({
-      ...prev,
-      [index]: !prev[index],
-    }));
-  };
-
-  const scanner = () => {
-    console.log('scanner');
-  };
-
   return (
     <>
       <NavBar />
       <Container>
         <div className='flex flex-col sm:flex-row justify-center gap-4 mt-8'>
-          <Button text='Escanear' color='bg-blue-600' onClick={scanner} />
+          <Button text='Escanear' color='bg-blue-600' onClick={openModal} />
           <Input
             value={code}
             onChange={(e) => setCode(e.target.value)}
             placeholder='Código lido'
           />
-
           <Input
             type='number'
             min='1'
@@ -109,7 +104,6 @@ const Scanner = () => {
             }
             placeholder='Quantidade'
           />
-
           <Button
             text='Adicionar Produto'
             color='bg-blue-600'
@@ -129,7 +123,12 @@ const Scanner = () => {
                 <div key={index} className='border p-2 rounded-md'>
                   <div
                     className='flex justify-between items-center cursor-pointer'
-                    onClick={() => toggleExpandProduto(index)}
+                    onClick={() =>
+                      setProdutoExpandido((prev) => ({
+                        ...prev,
+                        [index]: !prev[index],
+                      }))
+                    }
                   >
                     <div className='flex sm:flex-row flex-col justify-between w-full'>
                       <span>
@@ -139,7 +138,6 @@ const Scanner = () => {
                         <strong>Quantidade:</strong> {produto.quantidade}
                       </span>
                     </div>
-
                     <span className='mr-2 hidden sm:flex'>
                       {produtoExpandido[index] ? (
                         <FaChevronUp className='text-blue-600' />
@@ -150,7 +148,9 @@ const Scanner = () => {
                     <Button
                       text={<IoIosRemoveCircle />}
                       color='bg-red-500'
-                      onClick={() => removeProduct(index)}
+                      onClick={() =>
+                        setProdutos(produtos.filter((_, i) => i !== index))
+                      }
                     />
                   </div>
 
@@ -173,20 +173,19 @@ const Scanner = () => {
           )}
         </div>
 
-        <div className='flex justify-center mt-8'>
-          <Button
-            text='Enviar Pedido'
-            color='bg-yellow-400'
-            onClick={sendPedido}
-          />
-        </div>
-        <div className='text-center mt-6'>
-          <Button
-            text='Limpar pedidos'
-            color='bg-red-500'
-            onClick={clearLocalStorage}
-          />
-        </div>
+        {isModalOpen && (
+          <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center'>
+            <div className='bg-white p-6 rounded-md'>
+              <h2 className='text-center text-lg mb-4'>Escaneando...</h2>
+              <div id='scanner' className='w-64 h-64'></div>
+              <Button
+                text='Fechar'
+                color='bg-red-500 mt-4'
+                onClick={closeModal}
+              />
+            </div>
+          </div>
+        )}
       </Container>
     </>
   );
