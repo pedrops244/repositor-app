@@ -33,7 +33,7 @@ const BarcodeScanner = ({ onDetected, onClose }) => {
     return () => Quagga.stop();
   }, [onDetected]);
 
-  return <div id='scanner' className='sm:max-h-80 max-h-64'></div>;
+  return <div id='scanner' className='sm:max-h-80 max-h-64' />;
 };
 
 export default BarcodeScanner;
