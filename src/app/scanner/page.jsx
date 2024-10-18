@@ -54,7 +54,11 @@ const Scanner = () => {
         MAX_QUANTIDADE,
       );
     } else {
-      updatedProdutos.push({ codigo: code, quantidade: quantidadeInt });
+      updatedProdutos.push({
+        id: crypto.randomUUID(),
+        codigo: code,
+        quantidade: quantidadeInt,
+      });
     }
 
     setProdutos(updatedProdutos);
@@ -75,6 +79,10 @@ const Scanner = () => {
 
     pedidos.push(novoPedido);
     localStorage.setItem('pedidos', JSON.stringify(pedidos));
+
+    const createOrder = JSON.parse(localStorage.getItem('createOrder')) || [];
+    const updatedCreateOrder = [...createOrder, ...produtos];
+    localStorage.setItem('createOrder', JSON.stringify(updatedCreateOrder));
 
     toast.success('Pedido enviado com sucesso!');
     setProdutos([]);

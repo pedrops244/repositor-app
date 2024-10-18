@@ -91,10 +91,10 @@ const OrdersPage = () => {
 
                         {produtoExpandido[key] && (
                           <div className='border p-2 rounded-md mt-2'>
-                            <ul className='ml-4 space-y-1  list-decimal'>
+                            <ul className='ml-4 space-y-1  list-decimal text-wrap'>
                               {Array.from({ length: produto.quantidade }).map(
                                 (_, i) => (
-                                  <li className='ml-3' key={i}>
+                                  <li className='ml-3 text-nowrap' key={i}>
                                     {`Unidade | ${produto.codigo}`}
                                   </li>
                                 ),
