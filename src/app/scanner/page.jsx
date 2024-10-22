@@ -31,7 +31,7 @@ const Scanner = () => {
       toast.info('Nenhum produto no pedido para remover.');
       return;
     }
-    localStorage.removeItem('pedidos');
+    localStorage.removeItem('createOrders');
     toast.success('Todos os pedidos foram removidos.');
     setProdutos([]);
   };
@@ -71,18 +71,14 @@ const Scanner = () => {
       return;
     }
 
-    const pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
+    const pedidos = JSON.parse(localStorage.getItem('createOrders')) || [];
     const novoPedido = {
       produtos,
       enviadoEm: new Date().toISOString(),
     };
 
     pedidos.push(novoPedido);
-    localStorage.setItem('pedidos', JSON.stringify(pedidos));
-
-    const createOrder = JSON.parse(localStorage.getItem('createOrder')) || [];
-    const updatedCreateOrder = [...createOrder, ...produtos];
-    localStorage.setItem('createOrder', JSON.stringify(updatedCreateOrder));
+    localStorage.setItem('createOrders', JSON.stringify(pedidos));
 
     toast.success('Pedido enviado com sucesso!');
     setProdutos([]);
