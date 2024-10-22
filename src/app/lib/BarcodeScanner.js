@@ -4,19 +4,29 @@ import Quagga from '@ericblade/quagga2';
 import { toast } from 'react-toastify';
 
 const BarcodeScanner = ({ onDetected, onClose }) => {
+  let lastScannedCode = null;
+  let debounceTimeout = null;
+
   useEffect(() => {
     Quagga.init(
       {
         inputStream: {
           type: 'LiveStream',
           target: document.querySelector('#scanner'),
+          constraints: {
+            facingMode: 'environment',
+            width: 340,
+            height: 230,
+          },
         },
         decoder: {
-          readers: ['code_128_reader', 'ean_reader'],
+          readers: ['ean_reader'],
         },
+        locate: true,
       },
       (err) => {
         if (err) {
+          console.error('Erro ao iniciar o scanner:', err);
           return;
         }
         Quagga.start();
@@ -24,13 +34,22 @@ const BarcodeScanner = ({ onDetected, onClose }) => {
     );
 
     Quagga.onDetected((result) => {
-      if (result?.codeResult?.code) {
-        const scannedCode = result.codeResult.code;
-        onDetected(scannedCode);
-      }
+      const scannedCode = result.codeResult?.code;
+      if (!scannedCode || scannedCode === lastScannedCode) return;
+
+      lastScannedCode = scannedCode;
+
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(() => {
+        lastScannedCode = null;
+      }, 1000);
+
+      onDetected(scannedCode);
     });
 
-    return () => Quagga.stop();
+    return () => {
+      Quagga.stop();
+    };
   }, [onDetected]);
 
   return <div id='scanner' className='sm:max-h-80 max-h-64' />;

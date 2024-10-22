@@ -4,16 +4,31 @@ import Container from '../ui/Container';
 import { NavBar } from '../ui/NavBar';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { formatarData } from '../lib/formatarData';
+import Button from '../ui/Button';
+import BarcodeScanner from '../lib/BarcodeScanner';
+import { toast } from 'react-toastify';
 
+const saveToLocalStorage = (key, data) => {
+  localStorage.setItem(key, JSON.stringify(data));
+};
 const OrdersPage = () => {
-  const [pedidos, setPedidos] = useState([]);
+  const [createOrders, setCreateOrders] = useState([]);
+  const [receivedOrders, setReceivedOrders] = useState([]);
   const [pedidoExpandido, setPedidoExpandido] = useState({});
   const [produtoExpandido, setProdutoExpandido] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const storedPedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
-      setPedidos(storedPedidos);
+      const storedCreateOrders =
+        JSON.parse(localStorage.getItem('createOrders')) || [];
+      const storedReceivedOrders =
+        JSON.parse(localStorage.getItem('receivedOrders')) || [];
+      setCreateOrders(storedCreateOrders);
+      setReceivedOrders(storedReceivedOrders);
     }
   }, []);
 
@@ -25,23 +40,90 @@ const OrdersPage = () => {
   };
 
   const toggleExpandProduto = (pedidoIndex, produtoIndex) => {
-    const key = `${pedidoIndex}-${produtoIndex}`; // Chave única para cada produto
+    const key = `${pedidoIndex}-${produtoIndex}`;
     setProdutoExpandido((prev) => ({
       ...prev,
       [key]: !prev[key],
     }));
   };
 
+  const handleDetected = (scannedCode) => {
+    let foundProduct = false;
+    let newReceivedOrders = [...receivedOrders];
+
+    const updatedCreateOrders = createOrders
+      .map((pedido) => {
+        const updatedProdutos = pedido.produtos.filter((produto) => {
+          if (produto.codigo === scannedCode && !foundProduct) {
+            foundProduct = true;
+
+            if (produto.quantidade > 1) {
+              produto.quantidade -= 1;
+              return true;
+            } else {
+              return false;
+            }
+          }
+          return true;
+        });
+
+        return { ...pedido, produtos: updatedProdutos };
+      })
+      .filter((pedido) => pedido.produtos.length > 0);
+
+    if (foundProduct) {
+      const existingProductIndex = newReceivedOrders.findIndex(
+        (produto) => produto.codigo === scannedCode,
+      );
+
+      if (existingProductIndex !== -1) {
+        newReceivedOrders[existingProductIndex].quantidade += 1;
+      } else {
+        const produtoAdicionado = createOrders
+          .flatMap((pedido) => pedido.produtos)
+          .find((produto) => produto.codigo === scannedCode);
+
+        if (produtoAdicionado) {
+          newReceivedOrders.push({ ...produtoAdicionado, quantidade: 1 });
+        }
+      }
+
+      saveToLocalStorage('createOrders', updatedCreateOrders);
+      saveToLocalStorage('receivedOrders', newReceivedOrders);
+
+      setCreateOrders(updatedCreateOrders);
+      setReceivedOrders(newReceivedOrders);
+
+      toast.success('Produto atualizado com sucesso.');
+    } else {
+      toast.error('Produto não encontrado no createOrders.');
+    }
+
+    closeModal();
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  };
+
   return (
     <>
       <NavBar />
       <Container>
-        <h2 className='text-center text-2xl font-bold mt-8'>Meus Pedidos</h2>
+        <h2 className='text-center text-2xl font-bold mt-8'>Minhas ordens</h2>
+        <div className='flex justify-center gap-4 py-3'>
+          <Button
+            text='Escanear'
+            color='bg-yellow-400'
+            textColor='text-black'
+            hover='hover:bg-yellow-300'
+            onClick={openModal}
+          />
+        </div>
 
-        {pedidos.length === 0 ? (
-          <p className='text-center'>Nenhum pedido encontrado.</p>
+        {createOrders.length === 0 ? (
+          <p className='text-center'>Nenhuma ordem encontrada.</p>
         ) : (
-          pedidos.map((pedido, pedidoIndex) => (
+          createOrders.map((pedido, pedidoIndex) => (
             <div key={pedidoIndex} className='mt-4 border p-4 rounded-md'>
               <div
                 className='flex justify-between items-center cursor-pointer'
@@ -109,6 +191,17 @@ const OrdersPage = () => {
               )}
             </div>
           ))
+        )}
+        {isModalOpen && (
+          <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center'>
+            <div className='bg-white p-6 rounded-lg shadow-lg w-full max-w-md'>
+              <h2 className='text-lg font-semibold mb-4'>Escaneando...</h2>
+              <div className='flex flex-col'>
+                <BarcodeScanner onDetected={handleDetected} />
+                <Button text='Fechar' color='bg-red-500' onClick={closeModal} />
+              </div>
+            </div>
+          </div>
         )}
       </Container>
     </>

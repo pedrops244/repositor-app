@@ -32,6 +32,7 @@ const Scanner = () => {
       return;
     }
     localStorage.removeItem('createOrders');
+    localStorage.removeItem('receivedOrders');
     toast.success('Todos os pedidos foram removidos.');
     setProdutos([]);
   };
