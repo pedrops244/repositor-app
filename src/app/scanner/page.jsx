@@ -8,6 +8,7 @@ import Input from '../ui/Input';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { IoIosRemoveCircle } from 'react-icons/io';
 import { toast } from 'react-toastify';
+import { saveToLocalStorage } from '../lib/saveToLocalStorage';
 import BarcodeScanner from '../lib/BarcodeScanner';
 
 const Scanner = () => {
@@ -31,11 +32,13 @@ const Scanner = () => {
       toast.info('Nenhum produto no pedido para remover.');
       return;
     }
-    localStorage.removeItem('createOrders');
-    localStorage.removeItem('receivedOrders');
-    toast.success('Todos os pedidos foram removidos.');
+
     setProdutos([]);
+    saveToLocalStorage('createOrders', []);
+    saveToLocalStorage('receivedOrders', []);
+    toast.success('Todos os pedidos foram removidos.');
   };
+
   const addProduct = () => {
     const quantidadeInt = Math.min(parseInt(quantity, 10), MAX_QUANTIDADE);
 
@@ -66,6 +69,7 @@ const Scanner = () => {
     setCode('');
     setQuantity('');
   };
+
   const sendPedido = () => {
     if (produtos.length === 0) {
       toast.info('Nenhum produto no pedido para enviar.');
@@ -80,7 +84,7 @@ const Scanner = () => {
     };
 
     pedidos.push(novoPedido);
-    localStorage.setItem('createOrders', JSON.stringify(pedidos));
+    saveToLocalStorage('createOrders', pedidos);
 
     toast.success('Pedido enviado com sucesso!');
     setProdutos([]);

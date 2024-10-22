@@ -15,8 +15,8 @@ const BarcodeScanner = ({ onDetected, onClose }) => {
           target: document.querySelector('#scanner'),
           constraints: {
             facingMode: 'environment',
-            width: 340,
-            height: 230,
+            width: 640,
+            height: 480,
           },
         },
         decoder: {

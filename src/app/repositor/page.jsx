@@ -4,13 +4,10 @@ import Container from '../ui/Container';
 import { NavBar } from '../ui/NavBar';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { formatarData } from '../lib/formatarData';
+import { saveToLocalStorage } from '../lib/saveToLocalStorage';
 import Button from '../ui/Button';
 import BarcodeScanner from '../lib/BarcodeScanner';
 import { toast } from 'react-toastify';
-
-const saveToLocalStorage = (key, data) => {
-  localStorage.setItem(key, JSON.stringify(data));
-};
 
 const OrdersPage = () => {
   const [createOrders, setCreateOrders] = useState([]);
@@ -58,23 +55,36 @@ const OrdersPage = () => {
       closeModal();
       return toast.error('Por favor, selecione um pedido.');
     }
-    let foundProduct = false;
-    let newReceivedOrders = [...receivedOrders];
 
-    const updatedCreateOrders = createOrders
+    const updatedCreateOrders = updateCreateOrders(scannedCode);
+    if (!updatedCreateOrders) {
+      toast.error('Produto não encontrado no pedido.');
+      closeModal();
+      return setTimeout(() => window.location.reload(), 2000);
+    }
+
+    const newReceivedOrders = updateReceivedOrders(scannedCode);
+
+    saveOrdersToLocalStorage(updatedCreateOrders, newReceivedOrders);
+    setCreateOrders(updatedCreateOrders);
+    setReceivedOrders(newReceivedOrders);
+
+    toast.success('Produto atualizado com sucesso.');
+    closeModal();
+    setTimeout(() => window.location.reload(), 2000);
+  };
+
+  const updateCreateOrders = (scannedCode) => {
+    let foundProduct = false;
+
+    const updatedOrders = createOrders
       .map((pedido) => {
         if (pedido.id !== selectedOrderId) return pedido;
 
         const updatedProdutos = pedido.produtos.filter((produto) => {
           if (produto.codigo === scannedCode && !foundProduct) {
             foundProduct = true;
-
-            if (produto.quantidade > 1) {
-              produto.quantidade -= 1;
-              return true;
-            } else {
-              return false;
-            }
+            return produto.quantidade > 1 ? --produto.quantidade : false;
           }
           return true;
         });
@@ -83,41 +93,32 @@ const OrdersPage = () => {
       })
       .filter((pedido) => pedido.produtos.length > 0);
 
-    if (foundProduct) {
-      const existingProductIndex = newReceivedOrders.findIndex(
-        (produto) => produto.codigo === scannedCode,
-      );
+    return foundProduct ? updatedOrders : null;
+  };
 
-      if (existingProductIndex !== -1) {
-        newReceivedOrders[existingProductIndex].quantidade += 1;
-      } else {
-        const produtoAdicionado = createOrders
-          .flatMap((pedido) => pedido.produtos)
-          .find((produto) => produto.codigo === scannedCode);
+  const updateReceivedOrders = (scannedCode) => {
+    const newOrders = [...receivedOrders];
+    const existingProductIndex = newOrders.findIndex(
+      (produto) => produto.codigo === scannedCode,
+    );
 
-        if (produtoAdicionado) {
-          newReceivedOrders.push({ ...produtoAdicionado, quantidade: 1 });
-        }
-      }
-
-      saveToLocalStorage('createOrders', updatedCreateOrders);
-      saveToLocalStorage('receivedOrders', newReceivedOrders);
-
-      setCreateOrders(updatedCreateOrders);
-      setReceivedOrders(newReceivedOrders);
-
-      toast.success('Produto atualizado com sucesso.');
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
+    if (existingProductIndex !== -1) {
+      newOrders[existingProductIndex].quantidade += 1;
     } else {
-      toast.error('Produto não encontrado no pedido.');
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
-    }
+      const produtoAdicionado = createOrders
+        .flatMap((pedido) => pedido.produtos)
+        .find((produto) => produto.codigo === scannedCode);
 
-    closeModal();
+      if (produtoAdicionado) {
+        newOrders.push({ ...produtoAdicionado, quantidade: 1 });
+      }
+    }
+    return newOrders;
+  };
+
+  const saveOrdersToLocalStorage = (createOrders, receivedOrders) => {
+    saveToLocalStorage('createOrders', createOrders);
+    saveToLocalStorage('receivedOrders', receivedOrders);
   };
 
   return (
@@ -206,10 +207,12 @@ const OrdersPage = () => {
 
                         {produtoExpandido[key] && (
                           <div className='border p-2 mt-2 rounded-md'>
-                            <ul className='list-decimal ml-4'>
+                            <ul className='list-decimal ml-4 space-y-1 text-wrap'>
                               {Array.from({ length: produto.quantidade }).map(
                                 (_, i) => (
-                                  <li key={i}>Unidade | {produto.codigo}</li>
+                                  <li className='ml-3 text-nowrap' key={i}>
+                                    Unidade | {produto.codigo}
+                                  </li>
                                 ),
                               )}
                             </ul>
