@@ -11,12 +11,14 @@ import { toast } from 'react-toastify';
 const saveToLocalStorage = (key, data) => {
   localStorage.setItem(key, JSON.stringify(data));
 };
+
 const OrdersPage = () => {
   const [createOrders, setCreateOrders] = useState([]);
   const [receivedOrders, setReceivedOrders] = useState([]);
   const [pedidoExpandido, setPedidoExpandido] = useState({});
   const [produtoExpandido, setProdutoExpandido] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState(null); // Pedido Selecionado
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -31,6 +33,10 @@ const OrdersPage = () => {
       setReceivedOrders(storedReceivedOrders);
     }
   }, []);
+
+  const handleSelectOrder = (event) => {
+    setSelectedOrderId(event.target.value); // Define o pedido selecionado
+  };
 
   const toggleExpandPedido = (pedidoIndex) => {
     setPedidoExpandido((prev) => ({
@@ -48,11 +54,17 @@ const OrdersPage = () => {
   };
 
   const handleDetected = (scannedCode) => {
+    if (!selectedOrderId) {
+      closeModal();
+      return toast.error('Por favor, selecione um pedido.');
+    }
     let foundProduct = false;
     let newReceivedOrders = [...receivedOrders];
 
     const updatedCreateOrders = createOrders
       .map((pedido) => {
+        if (pedido.id !== selectedOrderId) return pedido;
+
         const updatedProdutos = pedido.produtos.filter((produto) => {
           if (produto.codigo === scannedCode && !foundProduct) {
             foundProduct = true;
@@ -95,14 +107,17 @@ const OrdersPage = () => {
       setReceivedOrders(newReceivedOrders);
 
       toast.success('Produto atualizado com sucesso.');
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } else {
-      toast.error('Produto não encontrado no createOrders.');
+      toast.error('Produto não encontrado no pedido.');
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     }
 
     closeModal();
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
   };
 
   return (
@@ -110,13 +125,32 @@ const OrdersPage = () => {
       <NavBar />
       <Container>
         <h2 className='text-center text-2xl font-bold mt-8'>Minhas ordens</h2>
-        <div className='flex justify-center gap-4 py-3'>
+
+        <div className='flex justify-center sm:flex-row flex-col items-center gap-4 py-3'>
+          <select
+            className='border p-2 rounded-md text-gray-700'
+            onChange={handleSelectOrder}
+            value={selectedOrderId || ''}
+          >
+            <option value='' disabled>
+              Selecione um pedido
+            </option>
+            {createOrders.map((pedido, pedidoIndex) => (
+              <option key={pedido.id} value={pedido.id}>
+                Pedido: {pedidoIndex + 1} | {formatarData(pedido.enviadoEm)}
+              </option>
+            ))}
+          </select>
+
           <Button
             text='Escanear'
-            color='bg-yellow-400'
+            color={`bg-yellow-400 ${
+              !selectedOrderId ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
             textColor='text-black'
             hover='hover:bg-yellow-300'
             onClick={openModal}
+            disabled={!selectedOrderId}
           />
         </div>
 
@@ -124,20 +158,23 @@ const OrdersPage = () => {
           <p className='text-center'>Nenhuma ordem encontrada.</p>
         ) : (
           createOrders.map((pedido, pedidoIndex) => (
-            <div key={pedidoIndex} className='mt-4 border p-4 rounded-md'>
+            <div
+              key={pedidoIndex}
+              className={`mt-4 border p-4 rounded-md 
+              ${selectedOrderId === pedido.id ? 'border-yellow-500' : ''}`}
+            >
               <div
                 className='flex justify-between items-center cursor-pointer'
                 onClick={() => toggleExpandPedido(pedidoIndex)}
               >
-                <div className='flex items-center justify-between p-3 gap-3'>
+                <div className='flex items-center gap-3'>
                   <h3 className='text-lg font-semibold text-gray-800'>
                     Pedido {pedidoIndex + 1}
                   </h3>
-                  <span className='text-sm text-gray-500 '>
+                  <span className='text-sm text-gray-500'>
                     {formatarData(pedido.enviadoEm)}
                   </span>
                 </div>
-
                 <span>
                   {pedidoExpandido[pedidoIndex] ? (
                     <FaChevronUp className='text-blue-600' />
@@ -146,39 +183,33 @@ const OrdersPage = () => {
                   )}
                 </span>
               </div>
+
               {pedidoExpandido[pedidoIndex] && (
-                <ul className='mt-2 space-y-2 '>
+                <ul className='mt-2 space-y-2'>
                   {pedido.produtos.map((produto, produtoIndex) => {
                     const key = `${pedidoIndex}-${produtoIndex}`;
                     return (
-                      <li
-                        key={key}
-                        className='border-yellow-500 border p-2 rounded-md flex flex-col space-y-2'
-                      >
+                      <li key={key} className='border p-2 rounded-md'>
                         <div
                           className='flex justify-between items-center cursor-pointer'
                           onClick={() =>
                             toggleExpandProduto(pedidoIndex, produtoIndex)
                           }
                         >
-                          <div className='flex justify-between w-full'>
-                            <span>
-                              <strong>Produto:</strong> {produto.codigo}
-                            </span>
-                            <span className='flex gap-1 mr-1'>
-                              <strong>Qtd: </strong> {produto.quantidade}
-                            </span>
-                          </div>
+                          <span>
+                            <strong>Produto:</strong> {produto.codigo}
+                          </span>
+                          <span>
+                            <strong>Qtd:</strong> {produto.quantidade}
+                          </span>
                         </div>
 
                         {produtoExpandido[key] && (
-                          <div className='border p-2 rounded-md mt-2'>
-                            <ul className='ml-4 space-y-1  list-decimal'>
+                          <div className='border p-2 mt-2 rounded-md'>
+                            <ul className='list-decimal ml-4'>
                               {Array.from({ length: produto.quantidade }).map(
                                 (_, i) => (
-                                  <li className='ml-3' key={i}>
-                                    {`Unidade | ${produto.codigo}`}
-                                  </li>
+                                  <li key={i}>Unidade | {produto.codigo}</li>
                                 ),
                               )}
                             </ul>
@@ -192,14 +223,13 @@ const OrdersPage = () => {
             </div>
           ))
         )}
+
         {isModalOpen && (
           <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center'>
             <div className='bg-white p-6 rounded-lg shadow-lg w-full max-w-md'>
               <h2 className='text-lg font-semibold mb-4'>Escaneando...</h2>
-              <div className='flex flex-col'>
-                <BarcodeScanner onDetected={handleDetected} />
-                <Button text='Fechar' color='bg-red-500' onClick={closeModal} />
-              </div>
+              <BarcodeScanner onDetected={handleDetected} />
+              <Button text='Fechar' color='bg-red-500' onClick={closeModal} />
             </div>
           </div>
         )}

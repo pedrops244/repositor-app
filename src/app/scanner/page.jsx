@@ -74,6 +74,7 @@ const Scanner = () => {
 
     const pedidos = JSON.parse(localStorage.getItem('createOrders')) || [];
     const novoPedido = {
+      id: crypto.randomUUID(),
       produtos,
       enviadoEm: new Date().toISOString(),
     };
