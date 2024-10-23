@@ -21,7 +21,15 @@ const BarcodeScanner = ({ onDetected, onClose }) => {
         },
         decoder: {
           readers: ['ean_reader'],
+          multiple: false,
         },
+        locator: {
+          halfSample: true,
+          patchSize: 'medium',
+          debug: false,
+        },
+        numOfWorkers: navigator.hardwareConcurrency || 4,
+        frequency: 5,
         locate: true,
       },
       (err) => {

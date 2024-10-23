@@ -6,14 +6,15 @@ import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { formatarData } from '../lib/formatarData';
 
 const OrdersPage = () => {
-  const [pedidos, setPedidos] = useState([]);
+  const [receivedOrders, setReceivedOrders] = useState([]);
   const [pedidoExpandido, setPedidoExpandido] = useState({});
   const [produtoExpandido, setProdutoExpandido] = useState({});
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const storedPedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
-      setPedidos(storedPedidos);
+      const storedReceivedOrders =
+        JSON.parse(localStorage.getItem('receivedOrders')) || [];
+      setReceivedOrders(storedReceivedOrders);
     }
   }, []);
 
@@ -38,10 +39,10 @@ const OrdersPage = () => {
       <Container>
         <h2 className='text-center text-2xl font-bold mt-8'>Meus Pedidos</h2>
 
-        {pedidos.length === 0 ? (
+        {receivedOrders.length === 0 ? (
           <p className='text-center'>Nenhum pedido encontrado.</p>
         ) : (
-          pedidos.map((pedido, pedidoIndex) => (
+          receivedOrders.map((pedido, pedidoIndex) => (
             <div key={pedidoIndex} className='mt-4 border p-4 rounded-md'>
               <div
                 className='flex justify-between items-center cursor-pointer'
@@ -52,7 +53,7 @@ const OrdersPage = () => {
                     Pedido {pedidoIndex + 1}
                   </h3>
                   <span className='text-sm text-gray-500 '>
-                    {formatarData(pedido.enviadoEm)}
+                    {formatarData(pedido.recebidoEm)}
                   </span>
                 </div>
 

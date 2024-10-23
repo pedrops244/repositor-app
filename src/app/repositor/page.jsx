@@ -97,28 +97,59 @@ const OrdersPage = () => {
   };
 
   const updateReceivedOrders = (scannedCode) => {
-    const newOrders = [...receivedOrders];
-    const existingProductIndex = newOrders.findIndex(
-      (produto) => produto.codigo === scannedCode,
+    const pedidoExistente = receivedOrders.find(
+      (pedido) => pedido.id === selectedOrderId,
     );
 
-    if (existingProductIndex !== -1) {
-      newOrders[existingProductIndex].quantidade += 1;
-    } else {
-      const produtoAdicionado = createOrders
-        .flatMap((pedido) => pedido.produtos)
-        .find((produto) => produto.codigo === scannedCode);
+    if (pedidoExistente) {
+      // Verifica se o produto já está no pedido
+      const produtoExistente = pedidoExistente.produtos.find(
+        (produto) => produto.codigo === scannedCode,
+      );
 
-      if (produtoAdicionado) {
-        newOrders.push({ ...produtoAdicionado, quantidade: 1 });
+      if (produtoExistente) {
+        // Incrementa a quantidade do produto existente
+        produtoExistente.quantidade += 1;
+      } else {
+        // Adiciona um novo produto ao pedido existente
+        const produtoAdicionado = createOrders
+          .flatMap((pedido) => pedido.produtos)
+          .find((produto) => produto.codigo === scannedCode);
+
+        if (produtoAdicionado) {
+          pedidoExistente.produtos.push({
+            ...produtoAdicionado,
+            quantidade: 1,
+          });
+        }
       }
+    } else {
+      // Cria um novo pedido com o produto escaneado
+      const novoPedido = {
+        id: selectedOrderId,
+        produtos: [
+          {
+            ...createOrders
+              .flatMap((pedido) => pedido.produtos)
+              .find((produto) => produto.codigo === scannedCode),
+            quantidade: 1,
+          },
+        ],
+        recebidoEm: new Date().toISOString(),
+      };
+      receivedOrders.push(novoPedido);
     }
-    return newOrders;
+
+    return receivedOrders;
   };
 
   const saveOrdersToLocalStorage = (createOrders, receivedOrders) => {
     saveToLocalStorage('createOrders', createOrders);
     saveToLocalStorage('receivedOrders', receivedOrders);
+  };
+
+  const testingHandleFunc = () => {
+    handleDetected('2121');
   };
 
   return (
@@ -129,7 +160,7 @@ const OrdersPage = () => {
 
         <div className='flex justify-center sm:flex-row flex-col items-center gap-4 py-3'>
           <select
-            className='border p-2 rounded-md text-gray-700'
+            className='border border-gray-300 rounded-md shadow-sm p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition duration-150 ease-in-out'
             onChange={handleSelectOrder}
             value={selectedOrderId || ''}
           >
@@ -138,7 +169,7 @@ const OrdersPage = () => {
             </option>
             {createOrders.map((pedido, pedidoIndex) => (
               <option key={pedido.id} value={pedido.id}>
-                Pedido: {pedidoIndex + 1} | {formatarData(pedido.enviadoEm)}
+                Pedido: {pedidoIndex + 1} - {formatarData(pedido.enviadoEm)}
               </option>
             ))}
           </select>
@@ -153,6 +184,7 @@ const OrdersPage = () => {
             onClick={openModal}
             disabled={!selectedOrderId}
           />
+          <Button text='Dev' color='bg-green-400' onClick={testingHandleFunc} />
         </div>
 
         {createOrders.length === 0 ? (
