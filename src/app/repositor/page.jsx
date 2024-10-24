@@ -15,7 +15,7 @@ const OrdersPage = () => {
   const [pedidoExpandido, setPedidoExpandido] = useState({});
   const [produtoExpandido, setProdutoExpandido] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedOrderId, setSelectedOrderId] = useState(null); // Pedido Selecionado
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -32,7 +32,7 @@ const OrdersPage = () => {
   }, []);
 
   const handleSelectOrder = (event) => {
-    setSelectedOrderId(event.target.value); // Define o pedido selecionado
+    setSelectedOrderId(event.target.value);
   };
 
   const toggleExpandPedido = (pedidoIndex) => {
@@ -71,7 +71,7 @@ const OrdersPage = () => {
 
     toast.success('Produto atualizado com sucesso.');
     closeModal();
-    setTimeout(() => window.location.reload(), 2000);
+    return setTimeout(() => window.location.reload(), 2000);
   };
 
   const updateCreateOrders = (scannedCode) => {
@@ -102,16 +102,13 @@ const OrdersPage = () => {
     );
 
     if (pedidoExistente) {
-      // Verifica se o produto já está no pedido
       const produtoExistente = pedidoExistente.produtos.find(
         (produto) => produto.codigo === scannedCode,
       );
 
       if (produtoExistente) {
-        // Incrementa a quantidade do produto existente
         produtoExistente.quantidade += 1;
       } else {
-        // Adiciona um novo produto ao pedido existente
         const produtoAdicionado = createOrders
           .flatMap((pedido) => pedido.produtos)
           .find((produto) => produto.codigo === scannedCode);
@@ -124,7 +121,6 @@ const OrdersPage = () => {
         }
       }
     } else {
-      // Cria um novo pedido com o produto escaneado
       const novoPedido = {
         id: selectedOrderId,
         produtos: [
@@ -137,7 +133,7 @@ const OrdersPage = () => {
         ],
         recebidoEm: new Date().toISOString(),
       };
-      receivedOrders.push(novoPedido);
+      setReceivedOrders((prev) => [...prev, novoPedido]);
     }
 
     return receivedOrders;
@@ -164,9 +160,7 @@ const OrdersPage = () => {
             onChange={handleSelectOrder}
             value={selectedOrderId || ''}
           >
-            <option value='' disabled>
-              Selecione um pedido
-            </option>
+            <option value=''>Selecione um pedido</option>
             {createOrders.map((pedido, pedidoIndex) => (
               <option key={pedido.id} value={pedido.id}>
                 Pedido: {pedidoIndex + 1} - {formatarData(pedido.enviadoEm)}
@@ -222,7 +216,10 @@ const OrdersPage = () => {
                   {pedido.produtos.map((produto, produtoIndex) => {
                     const key = `${pedidoIndex}-${produtoIndex}`;
                     return (
-                      <li key={key} className='border p-2 rounded-md'>
+                      <li
+                        key={key}
+                        className='border p-2 rounded-md border-yellow-500'
+                      >
                         <div
                           className='flex justify-between items-center cursor-pointer'
                           onClick={() =>

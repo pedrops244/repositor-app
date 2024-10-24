@@ -17,7 +17,7 @@ const Scanner = () => {
   const [produtos, setProdutos] = useState([]);
   const [produtoExpandido, setProdutoExpandido] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const MAX_QUANTIDADE = 30;
+  const MAX_QUANTIDADE = 20;
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -55,7 +55,6 @@ const Scanner = () => {
     if (existingProductIndex >= 0) {
       updatedProdutos[existingProductIndex].quantidade = Math.min(
         updatedProdutos[existingProductIndex].quantidade + quantidadeInt,
-        MAX_QUANTIDADE,
       );
     } else {
       updatedProdutos.push({
