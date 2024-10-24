@@ -170,7 +170,7 @@ const Scanner = () => {
                     <div className='border p-2 rounded-md mt-2 border-yellow-500'>
                       <ul className='ml-4 space-y-1 list-decimal'>
                         {Array.from({
-                          length: Math.min(produto.quantidade, MAX_QUANTIDADE),
+                          length: Math.min(produto.quantidade),
                         }).map((_, i) => (
                           <li className='ml-3' key={i}>
                             {`Unidade | ${produto.codigo}`}

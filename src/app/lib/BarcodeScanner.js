@@ -1,18 +1,30 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react'; // Importações únicas
 import Quagga from '@ericblade/quagga2';
 import { toast } from 'react-toastify';
 
-const BarcodeScanner = ({ onDetected, onClose }) => {
+const BarcodeScanner = ({ onDetected }) => {
+  const scannerRef = useRef(null);
+  const [isMounted, setIsMounted] = useState(false);
   let lastScannedCode = null;
   let debounceTimeout = null;
 
   useEffect(() => {
+    setIsMounted(true);
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted || !scannerRef.current) return;
+
     Quagga.init(
       {
         inputStream: {
+          name: 'Live',
           type: 'LiveStream',
-          target: document.querySelector('#scanner'),
+          target: scannerRef.current,
           constraints: {
             facingMode: 'environment',
             width: 640,
@@ -35,6 +47,7 @@ const BarcodeScanner = ({ onDetected, onClose }) => {
       (err) => {
         if (err) {
           console.error('Erro ao iniciar o scanner:', err);
+          toast.error('Erro ao iniciar o scanner. Tente novamente.');
           return;
         }
         Quagga.start();
@@ -57,10 +70,11 @@ const BarcodeScanner = ({ onDetected, onClose }) => {
 
     return () => {
       Quagga.stop();
+      Quagga.offDetected();
     };
-  }, [onDetected]);
+  }, [isMounted, onDetected]);
 
-  return <div id='scanner' className='sm:max-h-80 max-h-64' />;
+  return <div ref={scannerRef} className='sm:max-h-80 max-h-64' />;
 };
 
 export default BarcodeScanner;

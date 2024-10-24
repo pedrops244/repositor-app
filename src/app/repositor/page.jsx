@@ -133,7 +133,7 @@ const OrdersPage = () => {
         ],
         recebidoEm: new Date().toISOString(),
       };
-      setReceivedOrders((prev) => [...prev, novoPedido]);
+      receivedOrders.push(novoPedido);
     }
 
     return receivedOrders;
